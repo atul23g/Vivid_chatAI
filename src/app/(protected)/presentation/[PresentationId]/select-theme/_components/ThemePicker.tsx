@@ -1,16 +1,15 @@
-'use client'
+"use client";
 
-
-import React, { useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import { Theme } from '@/lib/types';
-import { useSlideStore } from '@/store/useSlideStore';
-import { toast } from 'sonner';
-import { Loader2, Wand2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { generateLayouts } from '@/actions/chatgpt';
-import { motion } from 'framer-motion';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import React, { useState } from "react";
+import { useRouter, useParams } from "next/navigation";
+import { Theme } from "@/lib/types";
+import { useSlideStore } from "@/store/useSlideStore";
+import { toast } from "sonner";
+import { Loader2, Wand2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { generateLayouts } from "@/actions/chatgpt";
+import { motion } from "framer-motion";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 type Props = {
   selectedTheme: Theme;
@@ -24,63 +23,69 @@ const ThemePicker = ({ onThemeSelect, selectedTheme, themes }: Props) => {
   const { project, setSlides, currentTheme } = useSlideStore();
   const [loading, setLoading] = useState(false);
 
-  ;
+  const handleGenerateLayouts = async () => {
+    setLoading(true);
 
-const handleGenerateLayouts = async () => {
-  setLoading(true);
-  
-  // Debug: Log current state
-  console.log('Current project:', project);
-  console.log('Current theme:', currentTheme);
-  console.log('Params:', params);
+    // Debug: Log current state
+    console.log("Current project:", project);
+    console.log("Current theme:", currentTheme);
+    console.log("Params:", params);
 
-  if (!selectedTheme) {
-    toast.error('Error', { description: 'Please select a theme' });
-    setLoading(false);
-    return;
-  }
-
-  if (!project?.id) {
-    toast.error('Error', { description: 'Please create a project' });
-    router.push('/create-page');
-    return;
-  }
-
-  try {
-    
-    const PresentationId = params.PresentationId as string;
-    console.log('Sending to API - PresentationId:', PresentationId, 'theme:', currentTheme.name);
-    
-    const res = await generateLayouts(PresentationId, currentTheme.name);
-
-    console.log('API Response:', res);
-
-    if (res.status !== 200 || !res?.data) {
-      throw new Error(res.error || 'Failed to generate layouts');
+    if (!selectedTheme) {
+      toast.error("Error", { description: "Please select a theme" });
+      setLoading(false);
+      return;
     }
 
-    toast.success('Success', { description: 'Layouts generated successfully' });
-    
-    // Only navigate if we have valid slides data
-    if (res.data) {
-      setSlides(res.data);
-      router.push(`/presentation/${project.id}`);
+    if (!project?.id) {
+      toast.error("Error", { description: "Please create a project" });
+      router.push("/create-page");
+      return;
     }
-  } catch (error) {
-    console.error('Full error:', error);
-    toast.error('Error', {
-      description: error instanceof Error ? error.message : 'Failed to generate layouts',
-    });
-  } finally {
-    setLoading(false);
-  }
-};
+
+    try {
+      const PresentationId = params.PresentationId as string;
+      console.log(
+        "Sending to API - PresentationId:",
+        PresentationId,
+        "theme:",
+        currentTheme.name
+      );
+
+      const res = await generateLayouts(PresentationId, currentTheme.name);
+
+      console.log("API Response:", res);
+
+      if (res.status !== 200 || !res?.data) {
+        throw new Error(res.error || "Failed to generate layouts");
+      }
+
+      toast.success("Success", {
+        description: "Layouts generated successfully",
+      });
+
+      // Only navigate if we have valid slides data
+      if (res.data) {
+        setSlides(res.data);
+        router.push(`/presentation/${project.id}`);
+      }
+    } catch (error) {
+      console.error("Full error:", error);
+      toast.error("Error", {
+        description:
+          error instanceof Error ? error.message : "Failed to generate layouts",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div
       className="w-[400px] overflow-hidden sticky top-0 h-screen flex flex-col"
       style={{
-        backgroundColor: selectedTheme.sidebarColor || selectedTheme.backgroundColor,
+        backgroundColor:
+          selectedTheme.sidebarColor || selectedTheme.backgroundColor,
         borderLeft: `1px solid ${selectedTheme.accentColor}20`,
       }}
     >
@@ -155,9 +160,9 @@ const handleGenerateLayouts = async () => {
                   >
                     Title
                   </div>
-                  <div className='text-base opacity-80'>
-                    Body &{' '}
-                    <span style = {{ color: theme.accentColor}}> link</span>
+                  <div className="text-base opacity-80">
+                    Body &{" "}
+                    <span style={{ color: theme.accentColor }}> link</span>
                   </div>
                 </div>
               </Button>

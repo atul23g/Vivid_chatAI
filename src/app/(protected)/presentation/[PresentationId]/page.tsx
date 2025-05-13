@@ -15,6 +15,7 @@ import { themes } from '@/lib/constants'
 import Navbar from './_components/Navbar/Navbar'
 import LayoutPreview from './_components/editor-sidebar/leftsidebar/LayoutPreview'
 import Editor from './_components/editor/Editor'
+import EditorSidebar from './_components/rightSidebar'
 
 type Props = {}
 
@@ -78,6 +79,7 @@ const Page = (props: Props) => {
           <div className='flex-1 ml-64 pr-16'>
             <Editor isEditable ={true}/>
           </div>
+          <EditorSidebar/>
         </div>
       </div>
     </DndProvider>
