@@ -58,6 +58,7 @@ export const DropZone: React.FC<DropZoneProps> = ({
 
   return (
     <div
+      ref={dropRef as unknown as React.RefObject<HTMLDivElement>}
       className={cn(
         "h-4 my-2 rounded-md transition-all duration-200",
         isOver && canDrop ? "border-green-500 bg-green-100" : "border-gray-100",
@@ -105,26 +106,26 @@ export const DraggableSlide: React.FC<DraggableSlideProps> = ({
     canDrag: isEditable,
   });
   const [_, drop] = useDrop({
-  accept: ['SLIDE', 'LAYOUT'],
-  hover(item: { index: number; type: string }) {
-    if (!ref.current || !isEditable) {
-      return;
-    }
-
-    const dragIndex = item.index;
-    const hoverIndex = index;
-
-    if (item.type === 'SLIDE') {
-      if (dragIndex === hoverIndex) {
+    accept: ["SLIDE", "LAYOUT"],
+    hover(item: { index: number; type: string }) {
+      if (!ref.current || !isEditable) {
         return;
       }
-      moveSlide(dragIndex, hoverIndex);
-      item.index = hoverIndex;
-    }
-  },
-});
 
-drag(drop(ref))
+      const dragIndex = item.index;
+      const hoverIndex = index;
+
+      if (item.type === "SLIDE") {
+        if (dragIndex === hoverIndex) {
+          return;
+        }
+        moveSlide(dragIndex, hoverIndex);
+        item.index = hoverIndex;
+      }
+    },
+  });
+
+  drag(drop(ref));
 
   const handleContentChange = (
     contentId: string,
@@ -140,7 +141,7 @@ drag(drop(ref))
     <div
       ref={ref}
       className={cn(
-        "w-full rounded-lg shadow-lg relative p-0 min-h-[400px] max-h-[800px]",
+        "w-full rounded-lg shadow-lg relative p-8 min-h-[400px] max-h-[800px]",
         "shadow-xl transition-shadow duration-300",
         "flex flex-col",
         index === currentSlide ? "ring-2 ring-blue-500 ring-offset-2" : "",
@@ -255,13 +256,13 @@ const Editor = ({ isEditable }: Props) => {
     if (typeof window !== "undefined") setLoading(false);
   }, []);
 
-const saveSlides = useCallback(() => {
-  if (isEditable && project) {
-    (async () => {
-      await updateSlides(project.id, JSON.parse(JSON.stringify(slides)));
-    })();
-  }
-}, [isEditable, project, slides]);
+  const saveSlides = useCallback(() => {
+    if (isEditable && project) {
+      (async () => {
+        await updateSlides(project.id, JSON.parse(JSON.stringify(slides)));
+      })();
+    }
+  }, [isEditable, project, slides]);
 
   useEffect(() => {
     // If we already have a timer, cancel it
@@ -272,7 +273,7 @@ const saveSlides = useCallback(() => {
     // Inside the timer, make the save request
     if (isEditable) {
       autosaveTimeoutRef.current = setTimeout(() => {
-       saveSlides()
+        saveSlides();
       }, 2000);
     }
     return () => {
@@ -297,7 +298,7 @@ const saveSlides = useCallback(() => {
               <DropZone index={0} onDrop={handleDrop} isEditable={isEditable} />
             )}
             {orderedSlides.map((slide, index) => (
-              <React.Fragment key={slide.id || index}>
+             <React.Fragment key={slide.id || index}>
                 <DraggableSlide
                   slide={slide}
                   index={index}
@@ -305,6 +306,13 @@ const saveSlides = useCallback(() => {
                   handleDelete={handleDelete}
                   isEditable={isEditable}
                 />
+                {isEditable && (
+                  <DropZone
+                    index={index+1}
+                    onDrop={handleDrop}
+                    isEditable={isEditable}
+                  />
+                )}
               </React.Fragment>
             ))}
           </div>

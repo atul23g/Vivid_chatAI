@@ -136,7 +136,7 @@ const ContentRenderer: React.FC<MasterRecursiveComponentProps> = React.memo(
         }
         return null;
       case "image":
-        <motion.div {...animationProps} className="w-full h-full">
+       return ( <motion.div {...animationProps} className="w-full h-full">
           <CustomImage
             src={content.content as string}
             alt={content.alt || "image"}
@@ -146,7 +146,7 @@ const ContentRenderer: React.FC<MasterRecursiveComponentProps> = React.memo(
             onContentChange={onContentChange}
             isEditable={isEditable}
           />
-        </motion.div>;
+        </motion.div>);
 
       case "blockquote":
         return (

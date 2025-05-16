@@ -1,10 +1,16 @@
 "use client";
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
+import {
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "@/components/ui/sidebar";
 import { SignedIn, UserButton, useUser } from "@clerk/nextjs";
 import { User } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button"; // ✅ Missing import for Button
+import { toast } from "sonner";
+import { buySubscription } from "@/actions/lemonSqueezy";
 
 const NavFooter = ({ prismaUser }: { prismaUser: User }) => {
   const { isLoaded, isSignedIn, user } = useUser();
@@ -14,6 +20,24 @@ const NavFooter = ({ prismaUser }: { prismaUser: User }) => {
   if (!isLoaded || !isSignedIn) {
     return null;
   }
+
+  const handleUpgrading = async () => {
+    setLoading(true);
+    try {
+      const res = await buySubscription(prismaUser.id);
+      if (res.status !== 200) {
+        throw new Error("Failed to upgrade subscription");
+      }
+      router.push(res.url);
+    } catch (error) {
+      console.error(error);
+      toast.error("Error", {
+        description: "Something went wrong. Please try later.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <SidebarMenu>
@@ -34,7 +58,7 @@ const NavFooter = ({ prismaUser }: { prismaUser: User }) => {
                   className="w-full border-vivid bg-background-80 hover:bg-background-90 text-primary rounded-full font-bold"
                   variant={"default"}
                   size={"lg"}
-                  //onClick={handleUpgrading}
+                  onClick={handleUpgrading}
                 >
                   {loading ? "Upgrading..." : "Upgrade"}
                 </Button>
@@ -43,7 +67,10 @@ const NavFooter = ({ prismaUser }: { prismaUser: User }) => {
           )}
 
           <SignedIn>
-            <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+            <SidebarMenuButton
+              size="lg"
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+            >
               <UserButton />
               <div className="flex flex-col ml-2 overflow-hidden">
                 <span className="truncate font-semibold">{user?.fullName}</span>

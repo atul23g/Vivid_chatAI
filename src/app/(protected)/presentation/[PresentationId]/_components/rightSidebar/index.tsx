@@ -1,10 +1,18 @@
 "use client";
 import React from "react";
 import { useSlideStore } from "@/store/useSlideStore";
-import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@radix-ui/react-popover";
 import { Button } from "@/components/ui/button";
-import { LayoutTemplate } from "lucide-react";
+import { LayoutTemplate, Palette, Type } from "lucide-react";
 import LayoutChooser from "./tab/LayoutChooser";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
+import ComponentCard from "./tab/components-tab/ComponentPreview";
+import { component } from "@/lib/constants";
+import ThemeChooser from "./tab/ThemeChooser";
 
 type Props = {};
 
@@ -27,6 +35,59 @@ const EditorSidebar = (props: Props) => {
           </PopoverTrigger>
           <PopoverContent side="left" align="center" className="w-[480px] p-0">
             <LayoutChooser />
+          </PopoverContent>
+        </Popover>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-10 w-10 rounded-full"
+            >
+              <Type className="h-5 w-5" />
+              <span className="sr-only">Choose Layout</span>
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent
+            side="left"
+            align="center"
+            className="w-[480px] p-0"
+            style={{
+              backgroundColor: currentTheme.backgroundColor,
+              color: currentTheme.fontColor,
+            }}
+          >
+            <ScrollArea className="h-[400px]">
+              <div className="p-4 flex flex-col space-y-6">
+                {component.map((group, idx) => (
+                  <div className="space-y-2" key={idx}>
+                    <h3 className="text-sm font-medium text-muted-foreground px-1">
+                      {group.name}
+                    </h3>
+                    <div className="grid grid-cols-3 gap-4">
+                      {group.components.map((item) => (
+                        <ComponentCard key={item.componentType} item={item} />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+          </PopoverContent>
+        </Popover>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-10 w-10 rounded-full"
+            >
+              <Palette className="h-5 w-5" />
+              <span className="sr-only">Change Style</span>
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent side="left" align="center" className="w-80">
+            <ThemeChooser />
           </PopoverContent>
         </Popover>
       </div>

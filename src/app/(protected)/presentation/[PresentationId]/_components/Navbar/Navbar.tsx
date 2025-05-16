@@ -1,10 +1,11 @@
-'use client';
-import { useSlideStore } from '@/store/useSlideStore';
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Home, Share, Play } from 'lucide-react';
-import { toast } from 'sonner';
+"use client";
+import { useSlideStore } from "@/store/useSlideStore";
+import React, { useState } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Home, Share, Play } from "lucide-react";
+import { toast } from "sonner";
+import PresentationMode from "./PresentationMode";
 
 type Props = { presentationId: string };
 
@@ -16,8 +17,8 @@ const Navbar = ({ presentationId }: Props) => {
     navigator.clipboard.writeText(
       `${window.location.origin}/share/${presentationId}`
     );
-    toast.success('Link Copied', {
-      description: 'The link has been copied to your clipboard',
+    toast.success("Link Copied", {
+      description: "The link has been copied to your clipboard",
     });
   };
 
@@ -25,7 +26,8 @@ const Navbar = ({ presentationId }: Props) => {
     <nav
       className="fixed top-0 left-0 right-0 z-50 w-full h-20 flex justify-between items-center py-4 px-7 border-b"
       style={{
-        backgroundColor: currentTheme.navbarColor || currentTheme.backgroundColor,
+        backgroundColor:
+          currentTheme.navbarColor || currentTheme.backgroundColor,
         color: currentTheme.accentColor,
       }}
     >
@@ -55,7 +57,9 @@ const Navbar = ({ presentationId }: Props) => {
           <span className="hidden sm:inline">Present</span>
         </Button>
       </div>
-      {/* WIP: {isPresentationMode && <PresentationMode />} */}
+      {isPresentationMode && (
+        <PresentationMode onClose={() => setIsPresentationMode(false)} />
+      )}
     </nav>
   );
 };

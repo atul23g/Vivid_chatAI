@@ -7,13 +7,15 @@ type Props = {
   alt: string;
   className?: string;
   isPreview?: boolean;
-  contentId: string; // ✅ made this required
+  contentId: string; 
   onContentChange: (
     contentId: string,
     newContent: string | string[] | string[][]
   ) => void;
   isEditable?: boolean;
 };
+
+
 
 const CustomImage = ({
   src,
@@ -27,7 +29,7 @@ const CustomImage = ({
   return (
     <div className="relative group w-full h-full rounded-lg">
       <Image
-        src={src}
+        src={typeof src === "string" ? src.trim() : src}
         width={isPreview ? 48 : 800}
         height={isPreview ? 48 : 800}
         alt={alt}
