@@ -1,11 +1,23 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import { getAllProjects } from "@/actions/project";
 import NotFound from "@/components/global/not-found";
 import Projects from "@/components/global/projects";
 import ProjectCard from "@/components/global/project-card";
 
-const DashboardPage = async () => {
-  const allProjects = await getAllProjects();
+const DashboardPage = () => {
+  const [allProjects, setAllProjects] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      const projectsData = await getAllProjects();
+      setAllProjects(projectsData);
+      setLoading(false);
+    };
+    fetchProjects();
+  }, []); // Empty dependency array means this runs once on mount
 
   return (
     <div className="w-full flex flex-col gap-6 relative md:p-0 p-4">
@@ -20,7 +32,9 @@ const DashboardPage = async () => {
         </div>
       </div>
       
-      {allProjects.data && allProjects.data.length > 0 ? (
+      {loading ? (
+        <div>Loading projects...</div> // Simple loading indicator
+      ) : allProjects?.data && allProjects.data.length > 0 ? (
         <Projects projects={allProjects.data} />
       ) : (
         <NotFound />
